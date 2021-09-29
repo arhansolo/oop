@@ -13,6 +13,10 @@ public class Handler {
         return ("Список доступных команд:\n" + "/randomPoem - случайный экземпляр из коллекции русской поэзии!\n" +
                 "/stop - завершить обработку команд.");
     }
+    public String stop()
+    {
+        return "До встречи!";
+    }
 
     public void distributor(String instruction) throws IOException {
         Dispatcher dispatcher = new Dispatcher();
@@ -20,7 +24,7 @@ public class Handler {
             case "/start"->
                 dispatcher.output(hello());
             case "/stop"->
-                dispatcher.output("До встречи!");
+                dispatcher.output(stop());
             case "/randomPoem"->
             {
                 Poem poem = new Poem();
