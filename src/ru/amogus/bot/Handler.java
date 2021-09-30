@@ -1,39 +1,39 @@
-package ru.amogus;
+package ru.amogus.bot;
 
 import java.lang.*;
 import java.io.IOException;
 
 public class Handler {
 
-    public String hello() {
+    String hello() {
         return ("Привет!\n" +
                 "Чтобы ознакомиться с функционалом бота, отправь /help!");
     }
-    public String help() {
+    String help() {
         return ("Список доступных команд:\n" + "/randomPoem - случайный экземпляр из коллекции русской поэзии!\n" +
                 "/stop - завершить обработку команд.");
     }
-    public String stop()
+    String stop()
     {
         return "До встречи!";
     }
 
-    public void distributor(String instruction) throws IOException {
+    public String distributor(String instruction) throws IOException {
         Dispatcher dispatcher = new Dispatcher();
         switch (instruction) {
-            case "/start"->
-                dispatcher.output(hello());
-            case "/stop"->
-                dispatcher.output(stop());
-            case "/randomPoem"->
+            case "/start":
+                return hello();
+            case "/stop":
+                return stop();
+            case "/randomPoem":
             {
                 Poem poem = new Poem();
-                dispatcher.output(poem.getPoem());
+                return poem.getPoem();
             }
-            case "/help"->
-                dispatcher.output(help());
-            default->
-                dispatcher.output("Не понял твою команду!");
+            case "/help":
+                return help();
+            default:
+                return "Не понял твою команду!";
         }
     }
 }

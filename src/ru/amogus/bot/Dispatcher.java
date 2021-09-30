@@ -1,7 +1,9 @@
-package ru.amogus;
+package ru.amogus.bot;
 import java.util.Scanner;
 
 public class Dispatcher {
+    private final Scanner scanner = new Scanner(System.in);
+
     public void output(String instruction)
     {
         System.out.println(instruction);
@@ -9,8 +11,6 @@ public class Dispatcher {
 
     public String input()
     {
-        Scanner scan = new Scanner(System.in); return scan.next();
+        return scanner.next();
     }
-
-
 }

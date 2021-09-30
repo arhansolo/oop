@@ -1,4 +1,4 @@
-package ru.amogus;
+package ru.amogus.bot;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -31,7 +31,5 @@ public class HandlerTest {
         String str = poem.getPoem();
         Assert.assertEquals("Я помню чудное мгновенье!", str);
     }
-
-
 
 }

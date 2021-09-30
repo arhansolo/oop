@@ -1,4 +1,4 @@
-package ru.amogus;
+package ru.amogus.bot;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
