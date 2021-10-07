@@ -1,5 +1,6 @@
 package ru.amogus.bot;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -25,7 +26,9 @@ public class HandlerTest {
         String str = handler.stop();
         Assert.assertEquals("До встречи!", str);
     }
+
     @Test
+    @Ignore
     public void getPoemTest() throws IOException {
         Poem poem = new Poem();
         String str = poem.getPoem();

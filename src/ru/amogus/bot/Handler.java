@@ -18,7 +18,8 @@ public class Handler {
         return "До встречи!";
     }
 
-    public String distributor(String instruction) throws IOException {
+    public String distributor(BotRequest request) throws IOException {
+        String instruction = request.getInput();
         Dispatcher dispatcher = new Dispatcher();
         switch (instruction) {
             case "/start":

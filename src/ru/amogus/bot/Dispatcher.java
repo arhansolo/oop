@@ -9,8 +9,8 @@ public class Dispatcher {
         System.out.println(instruction);
     }
 
-    public String input()
+    public BotRequest input()
     {
-        return scanner.next();
+        return new BotRequest(scanner.next());
     }
 }
