@@ -17,8 +17,7 @@ public class HandlerTest {
     public void helpTest() throws IOException {
         Handler handler = new Handler();
         String str = handler.help();
-        Assert.assertEquals("Список доступных команд:\n" + "/randomPoem - случайный экземпляр из коллекции русской поэзии!\n" +
-                "/stop - завершить обработку команд.", str);
+        Assert.assertEquals("Список доступных команд:\n" + "/randomPoem - случайный экземпляр из коллекции русской поэзии!\n", str);
     }
     @Test
     public void stopTest() throws IOException {

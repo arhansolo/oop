@@ -1,16 +1,16 @@
 package ru.amogus.bot;
 
-import java.io.IOException;
+import org.telegram.telegrambots.meta.TelegramBotsApi;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
 public class Main {
-    public static void main(String [] args) throws IOException {
-        BotRequest request = new BotRequest("/start");
-        Dispatcher dispatcher = new Dispatcher();
-        Handler handler = new Handler();
-        dispatcher.output(handler.distributor(request)); //представим, что была отправлена команда /start, как это обычно бывает в Telegram при первом запуске бота
-        while(!request.getInput().equals("/stop")){
-            request = dispatcher.input();
-            dispatcher.output(handler.distributor(request));
+    public static void main(String [] args) throws TelegramApiException {
+        TelegramBotsApi telegramBotsApi = new TelegramBotsApi(DefaultBotSession.class);
+        try {
+            telegramBotsApi.registerBot(new Bot());
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
         }
     }
 }

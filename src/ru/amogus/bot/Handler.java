@@ -10,13 +10,9 @@ public class Handler {
                 "Чтобы ознакомиться с функционалом бота, отправь /help!");
     }
     String help() {
-        return ("Список доступных команд:\n" + "/randomPoem - случайный экземпляр из коллекции русской поэзии!\n" +
-                "/stop - завершить обработку команд.");
+        return ("Список доступных команд:\n" + "/randomPoem - случайный экземпляр из коллекции русской поэзии!\n");
     }
-    String stop()
-    {
-        return "До встречи!";
-    }
+    String stop() { return "До встречи!"; }
 
     public String distributor(BotRequest request) throws IOException {
         String instruction = request.getInput();

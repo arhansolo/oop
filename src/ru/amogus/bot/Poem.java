@@ -11,8 +11,8 @@ public class Poem {
     {
         Document doc = Jsoup.connect("http://russian-poetry.ru/Random.php").get();
         Elements poem = doc.select("pre");
-        String title = doc.title();
-        String res = title+ "\n\n" + poem.text().replace("<pre>", "");
+        String title = doc.title().replace("Русская поэзия. Случайное стихотворение. ","");
+        String res = title+ "\n\n" + poem.text();
         return res;
     }
 }
