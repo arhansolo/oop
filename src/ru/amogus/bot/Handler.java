@@ -59,6 +59,6 @@ public class Handler {
     }
     public File handlePhoto (BotRequest request)
     {
-        return new File("src/ru/amogus/bot/files/photo.png/");
+        return new File("photo.png");
     }
 }

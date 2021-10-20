@@ -16,8 +16,6 @@ public class MessageUpdate implements UpdateHandler {
     @Override
     public boolean validate(Update update) { return update.hasMessage() && (update.getMessage().hasText() || update.getMessage().hasPhoto()); }
 
-
-
     @Override
     public BotResponse handle(Update update) throws IOException {
         Message mesUpdate = update.getMessage();

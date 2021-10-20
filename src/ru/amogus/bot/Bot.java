@@ -1,10 +1,14 @@
 package ru.amogus.bot;
 
 import lombok.SneakyThrows;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import ru.amogus.bot.handlers.MessageUpdate;
+import ru.amogus.bot.handlers.PhotoUpdate;
+import ru.amogus.bot.handlers.TextUpdate;
 import ru.amogus.bot.handlers.UpdateHandler;
 
 import java.io.*;
@@ -16,8 +20,11 @@ import java.util.List;
 
 public class Bot extends TelegramLongPollingBot {
     List<UpdateHandler> handlers = new ArrayList<>();
-    public Bot() {
+    public Bot()
+    {
         handlers.add(new MessageUpdate());
+        //handlers.add(new TextUpdate());
+        //handlers.add(new PhotoUpdate());
     }
 
     private static final String USERNAME = "optimumprice_bot";
@@ -41,22 +48,18 @@ public class Bot extends TelegramLongPollingBot {
                 break;
             }
         }
-
-        if (message.getOutputPhoto() == null) { //Нужно, чтобы проверял все типы данных
+        SendMessage messageText = message.getOutput();
+        SendPhoto messagePhoto = message.getOutputPhoto();
+        if (messageText == null && messagePhoto == null) {
             return;
         }
         try {
-            execute(message.getOutputPhoto());
+            if(messageText.getText() != null)
+                execute(message.getOutput());
+            else if (messagePhoto.getPhoto() != null)
+                execute(message.getOutputPhoto());
         } catch (TelegramApiException e) {
-            //e.printStackTrace();
-        }
-        if (message.getOutput() == null) { //Нужно, чтобы проверял все типы данных
-            return;
-        }
-        try {
-            execute(message.getOutput());
-        } catch (TelegramApiException e) {
-            //e.printStackTrace();
+            e.printStackTrace();
         }
     }
 }
