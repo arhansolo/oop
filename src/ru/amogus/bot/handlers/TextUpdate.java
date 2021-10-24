@@ -24,8 +24,14 @@ public class TextUpdate implements UpdateHandler{
         text = userMessage.getInput();
         BotRequest request = new BotRequest(text, null);
 
+        return buildResponse(chatId, request);
+    }
+
+    public BotResponse buildResponse (String chatId, BotRequest request) throws IOException
+    {
         Handler handler = new Handler();
-        SendMessage textResponse = handler.distribute(request).getOutput(); textResponse.setChatId(chatId);
+        BotResponse distributedData = handler.distribute(request);
+        SendMessage textResponse = distributedData.getOutput(); textResponse.setChatId(chatId);
         return new BotResponse(textResponse, null);
     }
 }

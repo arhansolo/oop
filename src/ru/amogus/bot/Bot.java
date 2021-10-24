@@ -22,9 +22,9 @@ public class Bot extends TelegramLongPollingBot {
     List<UpdateHandler> handlers = new ArrayList<>();
     public Bot()
     {
-        handlers.add(new MessageUpdate());
-        //handlers.add(new TextUpdate());
-        //handlers.add(new PhotoUpdate());
+        //handlers.add(new MessageUpdate());
+        handlers.add(new TextUpdate());
+        handlers.add(new PhotoUpdate());
     }
 
     private static final String USERNAME = "optimumprice_bot";
@@ -41,23 +41,22 @@ public class Bot extends TelegramLongPollingBot {
     @Override
     public void onUpdateReceived(Update update) {
         BotResponse message = new BotResponse(null, null);
-
         for (UpdateHandler handler : handlers) {
             if (handler.validate(update)) {
                 message = handler.handle(update);
                 break;
             }
         }
-        SendMessage messageText = message.getOutput();
+        SendMessage messageText =  message.getOutput();
         SendPhoto messagePhoto = message.getOutputPhoto();
         if (messageText == null && messagePhoto == null) {
             return;
         }
         try {
-            if(messageText.getText() != null)
-                execute(message.getOutput());
-            else if (messagePhoto.getPhoto() != null)
-                execute(message.getOutputPhoto());
+                if(messageText.getText() != null)
+                    execute(messageText);
+                else if (messagePhoto.getPhoto() != null)
+                    execute(messagePhoto);
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }

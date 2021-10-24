@@ -40,9 +40,12 @@ public class MessageUpdate implements UpdateHandler {
     public BotResponse getResponse (String chatId, BotRequest request) throws IOException {
         Handler handler = new Handler();
 
-        SendMessage textResponse = handler.distribute(request).getOutput(); textResponse.setChatId(chatId);
-        SendPhoto photoResponse = handler.distribute(request).getOutputPhoto(); photoResponse.setChatId(chatId);
-        photoResponse.setCaption("В ответ на твою фотографию я отправлю это чудесное лого Телеграма!");
+        SendMessage textResponse = handler.distribute(request).getOutput();
+        textResponse.setChatId(chatId);
+
+        SendPhoto photoResponse = handler.distribute(request).getOutputPhoto();
+        photoResponse.setChatId(chatId);
+        //photoResponse.setCaption("В ответ на твою фотографию я отправлю это чудесное лого Телеграма!");
 
         return new BotResponse(textResponse, photoResponse);
 

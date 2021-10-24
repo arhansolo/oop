@@ -1,5 +1,6 @@
 package ru.amogus.bot;
 
+import com.google.zxing.NotFoundException;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
@@ -10,6 +11,7 @@ import java.lang.*;
 import java.io.IOException;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 
 public class Handler {
 
@@ -24,7 +26,6 @@ public class Handler {
 
     public BotResponse distribute(BotRequest request) throws IOException {
         SendMessage textResponse = new SendMessage(); SendPhoto photoResponse = new SendPhoto();
-        BotResponse response = new BotResponse(null, null);
 
         String instruction = request.getInput();
         List<PhotoSize> photo = request.getInputPhoto();
@@ -34,10 +35,29 @@ public class Handler {
         }
         else if(photo!=null)
         {
-            photoResponse.setPhoto(new InputFile(handlePhoto(request)));
+            BarcodeReader br = new BarcodeReader();
+            KnigaBookParser kb = new KnigaBookParser();
+            File resultPhoto = handlePhoto(request);
+            String photoPath = resultPhoto.getPath();
+            try {
+                String isbnCode = br.readBarcode(photoPath);
+                String bookInf = kb.getInformation(isbnCode);
+                try {
+                    String pathCover = kb.downloadCover(isbnCode);
+                    photoResponse.setPhoto(new InputFile(new File(pathCover)));
+                    photoResponse.setCaption(bookInf);
+                }
+                catch (Exception e)
+                {
+                    textResponse.setText(bookInf);
+                }
+
+            } catch (NotFoundException e) {
+                textResponse.setText("К сожалению, не удалось распознать штрихкод\uD83D\uDE14\n" +
+                        "Попробуй отправить ещё одно фото");
+            }
         }
-        response = new BotResponse(textResponse, photoResponse);
-        return response;
+        return new BotResponse(textResponse, photoResponse);
     }
 
     public String handleText (String instruction) throws IOException {
@@ -57,8 +77,16 @@ public class Handler {
                 return "Не понял тебя!";
         }
     }
-    public File handlePhoto (BotRequest request)
-    {
-        return new File("photo.png");
+    public File handlePhoto (BotRequest request) throws IOException {
+        List<PhotoSize> photo = request.getInputPhoto();
+
+        String fileId = Objects.requireNonNull(photo.stream()
+                .sorted(Comparator.comparing(PhotoSize::getFileSize).reversed())
+                .findFirst()
+                .orElse(null)).getFileId();
+        FileDownloader fd = new FileDownloader();
+        fd.uploadFile("", fileId);
+
+        return new File(fd.getFileName());
     }
 }
