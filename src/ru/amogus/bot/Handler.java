@@ -35,29 +35,35 @@ public class Handler {
         }
         else if(photo!=null)
         {
-            BarcodeReader br = new BarcodeReader();
-            KnigaBookParser kb = new KnigaBookParser();
-            File resultPhoto = handlePhoto(request);
-            String photoPath = resultPhoto.getPath();
-            try {
-                String isbnCode = br.readBarcode(photoPath);
-                String bookInf = kb.getInformation(isbnCode);
-                try {
-                    String pathCover = kb.downloadCover(isbnCode);
-                    photoResponse.setPhoto(new InputFile(new File(pathCover)));
-                    photoResponse.setCaption(bookInf);
-                }
-                catch (Exception e)
-                {
-                    textResponse.setText(bookInf);
-                }
-
-            } catch (NotFoundException e) {
-                textResponse.setText("К сожалению, не удалось распознать штрихкод\uD83D\uDE14\n" +
-                        "Попробуй отправить ещё одно фото");
-            }
+            getBookInf(textResponse, photoResponse, request);
         }
         return new BotResponse(textResponse, photoResponse);
+    }
+
+    public void getBookInf(SendMessage textResponse, SendPhoto photoResponse, BotRequest request) throws IOException {
+        BarcodeReader br = new BarcodeReader();
+        KnigaBookParser kb = new KnigaBookParser();
+
+        File resultPhoto = handlePhoto(request);
+        String photoPath = resultPhoto.getPath();
+        try {
+            String isbnCode = br.readBarcode(photoPath);
+            String bookInf = kb.getInformation(isbnCode);
+            try {
+                String pathCover = kb.downloadCover(isbnCode);
+                photoResponse.setPhoto(new InputFile(new File(pathCover)));
+                photoResponse.setCaption(bookInf);
+            }
+            catch (Exception e)
+            {
+                //e.printStackTrace();
+                textResponse.setText(bookInf);
+            }
+
+        } catch (NotFoundException | IOException e) {
+            textResponse.setText("К сожалению, не удалось распознать штрихкод\uD83D\uDE14\n" +
+                    "Попробуй отправить ещё одно фото");
+        }
     }
 
     public String handleText (String instruction) throws IOException {

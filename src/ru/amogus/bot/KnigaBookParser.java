@@ -6,6 +6,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
@@ -13,12 +14,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class KnigaBookParser {
-
-
     public String getInformation(String isbn) throws IOException {
-        Document doc = Jsoup.connect("https://knigabook.com/search?q="+isbn).get();
+        URL url = new URL("https://knigabook.com/search?q="+isbn);
+        if (!isGoodRequest(url)) return "К сожалению, по предоставленному штрихкоду не удалось найти никакой книги.\nЕсли на изображении со штрихкодом код ISBN отличен от самого штрихкода, то попробуй отправить мне ISBN!";
+        Document doc = Jsoup.connect(url.toString()).get();
         String bookLink = "https://knigabook.com" + doc.getElementsByClass("product__title ellipsis").attr("href");
-
         doc = Jsoup.connect(bookLink).get();
         String bookName = doc.getElementsByClass("product__info product__info_right").select("h1").text();
         List<String> bookParams = new ArrayList<>();
@@ -55,8 +55,16 @@ public class KnigaBookParser {
         }
         catch (Exception e)
         {
-            return imagePath;
+            //e.printStackTrace();
+            return null;
         }
+    }
+
+    public boolean isGoodRequest(URL url) throws IOException {
+        HttpURLConnection hook = (HttpURLConnection) url.openConnection();
+        hook.setRequestMethod("HEAD");
+        int responseCode = hook.getResponseCode();
+        return responseCode == 200;
     }
 
 }

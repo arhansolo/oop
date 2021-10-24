@@ -30,8 +30,13 @@ public class TextUpdate implements UpdateHandler{
     public BotResponse buildResponse (String chatId, BotRequest request) throws IOException
     {
         Handler handler = new Handler();
+
         BotResponse distributedData = handler.distribute(request);
         SendMessage textResponse = distributedData.getOutput(); textResponse.setChatId(chatId);
-        return new BotResponse(textResponse, null);
+
+        SendPhoto photoResponse = distributedData.getOutputPhoto();
+        photoResponse.setChatId(chatId);
+
+        return new BotResponse(textResponse, photoResponse);
     }
 }
