@@ -3,10 +3,12 @@ package ru.amogus.bot;
 import lombok.SneakyThrows;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageCaption;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-import ru.amogus.bot.handlers.MessageUpdate;
+import ru.amogus.bot.handlers.CallbackQueryUpdate;
 import ru.amogus.bot.handlers.PhotoUpdate;
 import ru.amogus.bot.handlers.TextUpdate;
 import ru.amogus.bot.handlers.UpdateHandler;
@@ -25,6 +27,7 @@ public class Bot extends TelegramLongPollingBot {
         //handlers.add(new MessageUpdate());
         handlers.add(new TextUpdate());
         handlers.add(new PhotoUpdate());
+        handlers.add(new CallbackQueryUpdate());
     }
 
     private static final String USERNAME = "optimumprice_bot";
@@ -40,23 +43,30 @@ public class Bot extends TelegramLongPollingBot {
     @SneakyThrows
     @Override
     public void onUpdateReceived(Update update) {
-        BotResponse message = new BotResponse(null, null);
+        BotResponse message = new BotResponse(null, null, null, null);
         for (UpdateHandler handler : handlers) {
             if (handler.validate(update)) {
                 message = handler.handle(update);
                 break;
             }
         }
-        SendMessage messageText =  message.getOutput();
+        SendMessage messageText =  message.getOutputText();
         SendPhoto messagePhoto = message.getOutputPhoto();
-        if (messageText == null && messagePhoto == null) {
+        EditMessageText editText = message.getOutputEditText();
+        EditMessageCaption editCaption = message.getOutputEditCaption();
+
+        if (messageText == null && messagePhoto == null && editText == null && editCaption == null) {
             return;
         }
         try {
                 if(messageText.getText() != null)
                     execute(messageText);
-                else if (messagePhoto.getPhoto() != null)
+                if (messagePhoto.getPhoto() != null)
                     execute(messagePhoto);
+                if (editText.getText()!= null)
+                    execute(editText);
+                if (editCaption.getCaption()!=null)
+                    execute(editCaption);
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }

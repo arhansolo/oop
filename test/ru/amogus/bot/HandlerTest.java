@@ -2,6 +2,7 @@ package ru.amogus.bot;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
+import ru.amogus.bot.parsers.Poem;
 
 import java.io.IOException;
 
@@ -30,7 +31,7 @@ public class HandlerTest {
     @Ignore
     public void getPoemTest() throws IOException {
         Poem poem = new Poem();
-        String str = poem.getPoem();
+        String str = poem.getInformation("");
         Assert.assertEquals("Я помню чудное мгновенье!", str);
     }
 

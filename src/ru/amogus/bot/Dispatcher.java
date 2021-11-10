@@ -11,6 +11,6 @@ public class Dispatcher {
 
     public BotRequest input()
     {
-        return new BotRequest(scanner.next(), null);
+        return new BotRequest(scanner.next(), null, null);
     }
 }
