@@ -5,6 +5,8 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import static ru.amogus.bot.Response.*;
+
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -16,7 +18,7 @@ public class KnigaBookParser extends Parser {
     @Override
     public String getInformation(String isbn) throws IOException {
         URL url = new URL("https://knigabook.com/search?q="+isbn);
-        if (!isGoodRequest(url)) return "К сожалению, по предоставленному штрихкоду не удалось найти никакой книги.\nЕсли на изображении со штрихкодом код ISBN отличен от самого штрихкода, то попробуй отправить мне ISBN!";
+        if (!isGoodRequest(url)) return UNKNOWN_ISBN.getContent();
 
         Document doc = Jsoup.connect(url.toString()).get();
         String bookLink = "https://knigabook.com" + doc.getElementsByClass("product__title ellipsis").attr("href");
@@ -31,6 +33,7 @@ public class KnigaBookParser extends Parser {
         resultBuilder.append(result.get(result.size()-1));
         return resultBuilder.toString();
     }
+
     @Override
     public BufferedImage getImage(String isbn) throws IOException {
         Document doc = Jsoup.connect("https://knigabook.com/search?q="+isbn).get();
@@ -55,6 +58,7 @@ public class KnigaBookParser extends Parser {
             resultList.add(bookNames.get(i).text() + " - " + bookPrices.get(i).text() + "\n" + bookPrices.select("a").attr("href"));
         return resultList;
     }
+
     public List<String> getBookParams (Document doc)
     {
         String bookName = doc.getElementsByClass("product__info product__info_right").select("h1").text();

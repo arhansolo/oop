@@ -1,5 +1,7 @@
 package ru.amogus.bot.parsers;
 
+import org.apache.commons.validator.routines.ISBNValidator;
+
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -14,5 +16,11 @@ public abstract class Parser {
         hook.setRequestMethod("HEAD");
         int responseCode = hook.getResponseCode();
         return responseCode == 200;
+    }
+
+    public boolean isValidISBN(String isbn)
+    {
+        ISBNValidator iv = new ISBNValidator();
+        return iv.isValid(isbn);
     }
 }

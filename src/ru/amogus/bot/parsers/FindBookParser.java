@@ -1,4 +1,8 @@
 package ru.amogus.bot.parsers;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+
+import javax.annotation.Nullable;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
@@ -9,21 +13,16 @@ public class FindBookParser extends Parser{
 
         return parseFindBook(isbn);
     }
+
     @Override
+    @Nullable
     public BufferedImage getImage(String instruction) throws IOException {
         return null;
     }
 
     public String parseFindBook (String isbn) throws IOException {
-        URL url = new URL ("https://findbook.ru/search/d1?isbn=" + isbn); //9785170878888
-       /* URL url = new URL("https://findbook.ru/search/d1?title=&authors=%D2%EE%EB%F1%F2%EE%E9&publisher=&isbn=&s=1");
+        URL url = new URL ("https://findbook.ru/search/d1?isbn=" + isbn);
         Document doc = Jsoup.connect(url.toString()).get();
-        Elements trs = doc.select("body").select("center").get(1).select("table").select("tr").select("tbody").get(3).select("tr");
-
-        for (Element tr : trs)
-        {
-            System.out.println(tr.text() + "\n");
-        }*/
         return url.toString();
     }
 

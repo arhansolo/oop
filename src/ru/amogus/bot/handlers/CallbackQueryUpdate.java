@@ -8,7 +8,7 @@ import ru.amogus.bot.BotResponse;
 
 import java.io.IOException;
 
-public class CallbackQueryUpdate extends UpdateHandler{
+public class CallbackQueryUpdate implements UpdateHandler {
 
     @Override
     public boolean validate(Update update) { return update.hasCallbackQuery(); }
@@ -17,9 +17,9 @@ public class CallbackQueryUpdate extends UpdateHandler{
     public BotResponse handle(Update update) throws IOException, TelegramApiException {
         String chatId = Long.toString(update.getCallbackQuery().getMessage().getChatId());
         CallbackQuery callbackQuery = update.getCallbackQuery();
-        BotRequest userAction = new BotRequest(null, null, callbackQuery);
+        BotRequest userAction = new BotRequest(null, null, null, callbackQuery);
         callbackQuery = userAction.getInputCallbackQuery();
-        BotRequest request = new BotRequest(null, null, callbackQuery);
+        BotRequest request = new BotRequest(null, null, null, callbackQuery);
 
         return buildResponse(chatId, request);
     }

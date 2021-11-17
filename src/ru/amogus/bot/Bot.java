@@ -8,10 +8,7 @@ import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageTe
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-import ru.amogus.bot.handlers.CallbackQueryUpdate;
-import ru.amogus.bot.handlers.PhotoUpdate;
-import ru.amogus.bot.handlers.TextUpdate;
-import ru.amogus.bot.handlers.UpdateHandler;
+import ru.amogus.bot.handlers.*;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -24,9 +21,9 @@ public class Bot extends TelegramLongPollingBot {
     List<UpdateHandler> handlers = new ArrayList<>();
     public Bot()
     {
-        //handlers.add(new MessageUpdate());
         handlers.add(new TextUpdate());
         handlers.add(new PhotoUpdate());
+        handlers.add(new DocumentUpdate());
         handlers.add(new CallbackQueryUpdate());
     }
 

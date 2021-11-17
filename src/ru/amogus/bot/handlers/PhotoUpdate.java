@@ -8,7 +8,7 @@ import ru.amogus.bot.*;
 import java.io.IOException;
 import java.util.List;
 
-public class PhotoUpdate extends UpdateHandler{
+public class PhotoUpdate implements UpdateHandler {
     @Override
     public boolean validate(Update update) { return update.hasMessage() && update.getMessage().hasPhoto();}
 
@@ -18,9 +18,9 @@ public class PhotoUpdate extends UpdateHandler{
         String chatId = Long.toString(mesUpdate.getChatId());
         List<PhotoSize> photo = mesUpdate.getPhoto();
 
-        BotRequest userMessage = new BotRequest(null, photo, null);
+        BotRequest userMessage = new BotRequest(null, photo, null,null);
         photo = userMessage.getInputPhoto();
-        BotRequest request = new BotRequest(null, photo, null);
+        BotRequest request = new BotRequest(null, photo, null,null);
 
         return buildResponse(chatId, request);
     }
