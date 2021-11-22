@@ -16,7 +16,7 @@ public class FindBookParser extends Parser{
 
     @Override
     @Nullable
-    public BufferedImage getImage(String instruction) throws IOException {
+    public BufferedImage getImage(String instruction) {
         return null;
     }
 

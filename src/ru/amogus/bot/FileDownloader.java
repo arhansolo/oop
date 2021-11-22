@@ -1,6 +1,5 @@
 package ru.amogus.bot;
 
-import org.glassfish.jersey.server.model.Suspendable;
 import org.json.JSONObject;
 
 import javax.annotation.Nullable;

@@ -35,6 +35,7 @@ public class Handler {
         String instruction = request.getInputText();
         List<PhotoSize> photo = request.getInputPhoto();
         Document document = request.getInputDocument();
+        System.out.println(document);
         CallbackQuery callbackQuery = request.getInputCallbackQuery();
 
         if (instruction != null)
@@ -70,25 +71,10 @@ public class Handler {
 
     public void getBookInf(SendMessage textResponse, SendPhoto photoResponse, BotRequest request) {
         KnigaBookParser kb = new KnigaBookParser();
-        String isbnCode = "";
 
         try {
-            if (request.getInputText()!=null)
-                isbnCode = request.getInputText();
-            else
-                isbnCode = getIsbnFromBarcode(request);
-
-            if (isbnCode == null)
-            {
-                textResponse.setText(WRONG_PHOTO_FORMAT.getContent());
-                return;
-            }
-
-            if (!kb.isValidISBN(isbnCode))
-            {
-                textResponse.setText(INVALID_ISBN.getContent());
-                return;
-            }
+            String isbnCode = validateISBN(request, textResponse);
+            if (isbnCode == null) return;
 
             String bookInf = kb.getInformation(isbnCode);
             FindBookParser fb = new FindBookParser();
@@ -103,6 +89,7 @@ public class Handler {
                 setMarkupInline("updateCaption", "Показать цены!", priceLink,
                         textResponse, photoResponse);
             }
+
             catch (Exception e)
             {
                 textResponse.setText(bookInf);
@@ -114,6 +101,30 @@ public class Handler {
         } catch (NotFoundException | IOException e) {
             textResponse.setText(UNREADABLE_BARCODE.getContent());
         }
+    }
+
+    @Nullable
+    public String validateISBN(BotRequest request, SendMessage textResponse) throws IOException, NotFoundException {
+        KnigaBookParser kb = new KnigaBookParser();
+
+        String isbn;
+        if (request.getInputText()!=null)
+            isbn = request.getInputText();
+        else
+            isbn = getIsbnFromBarcode(request);
+
+        if (isbn == null)
+        {
+            textResponse.setText(WRONG_PHOTO_FORMAT.getContent());
+            return null;
+        }
+
+        if (!kb.isValidISBN(isbn))
+        {
+            textResponse.setText(INVALID_ISBN.getContent());
+            isbn = null;
+        }
+        return isbn;
     }
 
     public void getBookPrice (SendMessage textResponse, SendPhoto photoResponse, BotRequest request) {
@@ -139,6 +150,7 @@ public class Handler {
             br.readBarcode(image);
             return br.readBarcode(image);
         }
+
         catch (NullPointerException e)
         {
             return null;
@@ -147,20 +159,13 @@ public class Handler {
 
     public void handleText (SendMessage textResponse, SendPhoto photoResponse, BotRequest request) throws IOException {
         switch (request.getInputText()) {
-            case "/start":
-                textResponse.setText(HELLO.getContent());
-                break;
-            case "/randompoem":
-            {
+            case "/start" -> textResponse.setText(HELLO.getContent());
+            case "/randompoem" -> {
                 Poem poem = new Poem();
                 textResponse.setText(poem.getInformation(""));
-                break;
             }
-            case "/help":
-                textResponse.setText(HELP.getContent());
-                break;
-            default:
-                getBookInf(textResponse, photoResponse, request);
+            case "/help" -> textResponse.setText(HELP.getContent());
+            default -> getBookInf(textResponse, photoResponse, request);
         }
     }
 

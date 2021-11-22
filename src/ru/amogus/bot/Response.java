@@ -16,5 +16,5 @@ public enum Response {
     Response(String content){
         this.content = content;
     }
-    public String getContent(){ return content;}
+    public String getContent(){ return content; }
 }

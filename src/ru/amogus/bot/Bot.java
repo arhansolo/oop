@@ -28,13 +28,12 @@ public class Bot extends TelegramLongPollingBot {
     }
 
     private static final String USERNAME = "optimumprice_bot";
-    public String getBotUsername(){return USERNAME;}
+    public String getBotUsername() { return USERNAME; }
 
     @SneakyThrows
     public String getBotToken(){return readToken("token.txt");}
     public static String readToken(String fileName) throws IOException {
-        String content = Files.lines(Paths.get(fileName)).reduce("", String::concat);
-        return content;
+        return Files.lines(Paths.get(fileName)).reduce("", String::concat);
     }
 
     @SneakyThrows
