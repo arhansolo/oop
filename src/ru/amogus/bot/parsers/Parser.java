@@ -1,7 +1,6 @@
 package ru.amogus.bot.parsers;
 
 import org.apache.commons.validator.routines.ISBNValidator;
-
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.HttpURLConnection;

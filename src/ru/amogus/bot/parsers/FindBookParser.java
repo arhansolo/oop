@@ -1,7 +1,6 @@
 package ru.amogus.bot.parsers;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-
 import javax.annotation.Nullable;
 import java.awt.image.BufferedImage;
 import java.io.IOException;

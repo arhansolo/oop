@@ -16,7 +16,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class Bot extends TelegramLongPollingBot {
     List<UpdateHandler> handlers = new ArrayList<>();
     public Bot()
@@ -41,6 +40,9 @@ public class Bot extends TelegramLongPollingBot {
     public void onUpdateReceived(Update update) {
         BotResponse message = new BotResponse(null, null, null, null);
         for (UpdateHandler handler : handlers) {
+            Logger logger = new Logger();
+            logger.logUserInformation(update);
+
             if (handler.validate(update)) {
                 message = handler.handle(update);
                 break;

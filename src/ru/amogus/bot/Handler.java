@@ -35,7 +35,6 @@ public class Handler {
         String instruction = request.getInputText();
         List<PhotoSize> photo = request.getInputPhoto();
         Document document = request.getInputDocument();
-        System.out.println(document);
         CallbackQuery callbackQuery = request.getInputCallbackQuery();
 
         if (instruction != null)
@@ -182,6 +181,7 @@ public class Handler {
                     .orElse(null)).getFileId();
             return fd.getPhoto(fileId);
         }
+
         if (photo != null)
         {
             String fileId = photo.getFileId();
@@ -195,19 +195,11 @@ public class Handler {
     {
         InlineKeyboardMarkup markupInline = getMarkupInline(callbackData, buttonText, url);
 
-        switch (callbackData)
-        {
-            case "updateText":
-            {
+        switch (callbackData) {
+            case "updateText" ->
                 textResponse.setReplyMarkup(markupInline);
-                break;
-            }
-            case "updateCaption":
-            {
+            case "updateCaption" ->
                 photoResponse.setReplyMarkup(markupInline);
-                break;
-            }
-            default: break;
         }
     }
 
