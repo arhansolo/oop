@@ -1,6 +1,8 @@
 package ru.amogus.bot;
 
 import lombok.SneakyThrows;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageCaption;
@@ -13,7 +15,10 @@ import ru.amogus.bot.handlers.*;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class Bot extends TelegramLongPollingBot {
@@ -25,6 +30,8 @@ public class Bot extends TelegramLongPollingBot {
         handlers.add(new DocumentUpdate());
         handlers.add(new CallbackQueryUpdate());
     }
+
+    private static final Logger logger = LoggerFactory.getLogger(Bot.class);
 
     private static final String USERNAME = "optimumprice_bot";
     public String getBotUsername() { return USERNAME; }
@@ -39,15 +46,15 @@ public class Bot extends TelegramLongPollingBot {
     @Override
     public void onUpdateReceived(Update update) {
         BotResponse message = new BotResponse(null, null, null, null);
-        for (UpdateHandler handler : handlers) {
-            Logger logger = new Logger();
-            logger.logUserInformation(update);
+        logger.info(getInformationAboutUser(update));
 
+        for (UpdateHandler handler : handlers) {
             if (handler.validate(update)) {
                 message = handler.handle(update);
                 break;
             }
         }
+
         SendMessage messageText =  message.getOutputText();
         SendPhoto messagePhoto = message.getOutputPhoto();
         EditMessageText editText = message.getOutputEditText();
@@ -66,7 +73,18 @@ public class Bot extends TelegramLongPollingBot {
                 if (editCaption.getCaption()!=null)
                     execute(editCaption);
         } catch (TelegramApiException e) {
-            e.printStackTrace();
+            logger.error("TelegramApiException:" + e);
         }
+    }
+
+    public String getInformationAboutUser (Update update)
+    {
+        String userName = update.getMessage().getChat().getUserName();
+        long userID = update.getMessage().getChat().getId();
+
+        DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss dd/MM/yyyy");
+        Date date = new Date();
+
+        return "Received message from @" +  userName + ", id = " + userID + " at " + dateFormat.format(date);
     }
 }

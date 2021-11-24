@@ -1,6 +1,8 @@
 package ru.amogus.bot;
 
 import com.google.zxing.NotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageCaption;
@@ -25,6 +27,8 @@ import java.util.List;
 import java.util.Objects;
 
 public class Handler {
+
+    private static final Logger logger = LoggerFactory.getLogger(Handler.class);
 
     public BotResponse distribute(BotRequest request) throws IOException {
         SendMessage textResponse = new SendMessage();
@@ -91,6 +95,7 @@ public class Handler {
 
             catch (Exception e)
             {
+                logger.error(e.toString());
                 textResponse.setText(bookInf);
                 if (fb.isGoodRequest((new URL("https://knigabook.com/search?q="+isbnCode))))
                     setMarkupInline("updateText","Показать цены!", priceLink,
@@ -98,6 +103,7 @@ public class Handler {
             }
 
         } catch (NotFoundException | IOException e) {
+            logger.error(e.toString());
             textResponse.setText(UNREADABLE_BARCODE.getContent());
         }
     }
@@ -126,27 +132,12 @@ public class Handler {
         return isbn;
     }
 
-    public void getBookPrice (SendMessage textResponse, SendPhoto photoResponse, BotRequest request) {
-        FindBookParser fb = new FindBookParser();
-        try {
-            String isbnCode = getIsbnFromBarcode(request);
-            String result = fb.getInformation(isbnCode);
-            textResponse.setText(result);
-            setMarkupInline("updateText", "Показать информацию по книге!", "",
-                    textResponse, photoResponse);
-
-        } catch (NotFoundException | IOException e) {
-            textResponse.setText(UNREADABLE_BARCODE.getContent());
-        }
-    }
-
     @Nullable
     public String getIsbnFromBarcode (BotRequest request) throws IOException, NotFoundException {
         BarcodeReader br = new BarcodeReader();
         BufferedImage image = handlePhoto(request);
         try
         {
-            br.readBarcode(image);
             return br.readBarcode(image);
         }
 
