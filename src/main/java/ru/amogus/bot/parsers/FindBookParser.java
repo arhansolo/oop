@@ -21,7 +21,7 @@ public class FindBookParser extends Parser{
 
     public String parseFindBook (String isbn) throws IOException {
         URL url = new URL ("https://findbook.ru/search/d1?isbn=" + isbn);
-        Document doc = Jsoup.connect(url.toString()).get();
+        //Document doc = Jsoup.connect(url.toString()).get();
         return url.toString();
     }
 

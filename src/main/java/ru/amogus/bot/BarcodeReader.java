@@ -11,6 +11,8 @@ public class BarcodeReader {
 
     private static final String charset = "UTF-8"; // or "ISO-8859-1";
 
+    public static boolean isRotated45 = false;
+
     public String readBarcode(BufferedImage image)
             throws NotFoundException {
         BinaryBitmap binaryBitmap = new BinaryBitmap(new HybridBinarizer(
@@ -30,7 +32,6 @@ public class BarcodeReader {
 
     @Nullable
     public String rotateBitmap (BinaryBitmap binaryBitmap) throws NotFoundException {
-        int rotate45Count = 0;
         for (int i = 0; i < 4; i++) {
             if (binaryBitmap.isRotateSupported()) {
                 binaryBitmap = binaryBitmap.rotateCounterClockwise();
@@ -40,9 +41,10 @@ public class BarcodeReader {
                 return barcodeResult.getText();
             }
             catch (NotFoundException e){
-                if (rotate45Count>0) continue;
+                if (isRotated45) continue;
+
                 binaryBitmap = binaryBitmap.rotateCounterClockwise45();
-                rotate45Count+=1;
+                isRotated45 = true;
 
                 try {
                     Result barcodeResult = new MultiFormatReader().decode(binaryBitmap);

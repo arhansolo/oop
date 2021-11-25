@@ -61,7 +61,6 @@ public class HandlerTest {
         BotRequest request = new BotRequest(null, null, document,null);
         SendMessage textResponse = new SendMessage();
         String resultIsbn = handler.validateISBN(request, textResponse);
-        System.out.println(textResponse.getText());
         Assert.assertNull(resultIsbn);
         Assert.assertEquals(Response.WRONG_PHOTO_FORMAT.getContent(), textResponse.getText());
     }
@@ -73,5 +72,4 @@ public class HandlerTest {
         String str = poem.getInformation("");
         Assert.assertEquals("Я помню чудное мгновенье!", str);
     }
-
 }
