@@ -1,6 +1,7 @@
-package ru.amogus.bot;
+package ru.amogus.bot.parsers;
 
 import org.json.JSONObject;
+import ru.amogus.bot.Bot;
 
 import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
@@ -13,7 +14,7 @@ import java.util.Map;
 public class FileDownloader {
     private static final Map<String, String> envParams = System.getenv();
 
-    final String token = new Bot(envParams.get("USERNAME"), envParams.get("TOKEN")).getBotToken();
+    private final String token = new Bot(envParams.get("USERNAME"), envParams.get("TOKEN")).getBotToken();
 
     public BufferedImage getPhoto(String fileId) throws IOException {
         URL url = new URL("https://api.telegram.org/bot"+ token + "/getFile?file_id="+fileId);

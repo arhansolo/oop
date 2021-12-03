@@ -1,4 +1,4 @@
-package ru.amogus.bot;
+package ru.amogus.bot.messageComposers;
 
 import com.google.zxing.*;
 import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
@@ -9,37 +9,39 @@ import java.awt.image.BufferedImage;
 
 public class BarcodeReader {
 
-    private static final String charset = "UTF-8"; // or "ISO-8859-1";
-
     public static boolean isRotated45 = false;
 
-    public String readBarcode(BufferedImage image)
-            throws NotFoundException {
-        BinaryBitmap binaryBitmap = new BinaryBitmap(new HybridBinarizer(
-                new BufferedImageLuminanceSource(image)));
-        try
-        {
+    public String readBarcode(BufferedImage image) throws NotFoundException {
+        BinaryBitmap binaryBitmap = new BinaryBitmap(new HybridBinarizer(new BufferedImageLuminanceSource(image)));
+
+        try {
             Result barcodeResult = new MultiFormatReader().decode(binaryBitmap);
             return barcodeResult.getText();
         }
-        catch (NotFoundException e)
-        {
+
+        catch (NotFoundException e) {
             String result = rotateBitmap(binaryBitmap);
-            if (result == null) return new MultiFormatReader().decode(binaryBitmap).getText();
+
+            if (result == null) {
+                return new MultiFormatReader().decode(binaryBitmap).getText();
+            }
+
             return result;
         }
     }
 
     @Nullable
-    public String rotateBitmap (BinaryBitmap binaryBitmap) throws NotFoundException {
+    private String rotateBitmap (BinaryBitmap binaryBitmap) throws NotFoundException {
         for (int i = 0; i < 4; i++) {
             if (binaryBitmap.isRotateSupported()) {
                 binaryBitmap = binaryBitmap.rotateCounterClockwise();
             }
+
             try {
                 Result barcodeResult = new MultiFormatReader().decode(binaryBitmap);
                 return barcodeResult.getText();
             }
+
             catch (NotFoundException e){
                 if (isRotated45) continue;
 
@@ -50,11 +52,12 @@ public class BarcodeReader {
                     Result barcodeResult = new MultiFormatReader().decode(binaryBitmap);
                     return barcodeResult.getText();
                 }
-                catch (NotFoundException exception){
-                    //
+
+                catch (NotFoundException ignored){
                 }
             }
         }
+
         return null;
     }
 }

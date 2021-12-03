@@ -11,10 +11,7 @@ public class Main {
 
     public static void main(String [] args) throws TelegramApiException {
         TelegramBotsApi telegramBotsApi = new TelegramBotsApi(DefaultBotSession.class);
-        try {
-            telegramBotsApi.registerBot(new Bot(envParams.get("USERNAME"), envParams.get("TOKEN")));
-        } catch (TelegramApiException e) {
-            e.printStackTrace();
-        }
+
+        telegramBotsApi.registerBot(new Bot(envParams.get("USERNAME"), envParams.get("TOKEN")));
     }
 }

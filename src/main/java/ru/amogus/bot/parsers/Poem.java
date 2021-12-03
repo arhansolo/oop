@@ -10,8 +10,7 @@ import java.io.IOException;
 
 public class Poem extends Parser {
     @Override
-    public String getInformation(String instruction) throws IOException
-    {
+    public String getInformation(String instruction) throws IOException {
         Document doc = Jsoup.connect("http://russian-poetry.ru/Random.php").get();
         Elements poem = doc.select("pre");
         String title = doc.title().replace("Русская поэзия. Случайное стихотворение. ","");

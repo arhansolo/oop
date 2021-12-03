@@ -6,14 +6,15 @@ import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageCa
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-import ru.amogus.bot.BotRequest;
-import ru.amogus.bot.BotResponse;
-import ru.amogus.bot.Handler;
+import ru.amogus.bot.botObjects.BotRequest;
+import ru.amogus.bot.botObjects.BotResponse;
+import ru.amogus.bot.messageComposers.Handler;
 
 import java.io.IOException;
 
 public interface UpdateHandler {
     boolean validate(Update update);
+
     BotResponse handle(Update update) throws IOException, TelegramApiException;
 
     default BotResponse buildResponse (String chatId, BotRequest request) throws IOException {

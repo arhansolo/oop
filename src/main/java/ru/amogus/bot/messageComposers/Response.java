@@ -1,4 +1,4 @@
-package ru.amogus.bot;
+package ru.amogus.bot.messageComposers;
 
 public enum Response {
     HELLO("Привет!\n" +
@@ -13,8 +13,12 @@ public enum Response {
             "попробуй отправить мне именно этот код!\nЕсли по обоим кодам не удаётся найти книгу, то скорее всего этого издания нет на KnigaBook.com");
 
     private final String content;
+
     Response(String content){
         this.content = content;
     }
-    public String getContent(){ return content; }
+
+    public String getContent(){
+        return content;
+    }
 }

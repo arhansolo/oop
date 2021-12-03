@@ -1,6 +1,5 @@
 package ru.amogus.bot.parsers;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
+
 import javax.annotation.Nullable;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -9,7 +8,6 @@ import java.net.URL;
 public class FindBookParser extends Parser{
     @Override
     public String getInformation(String isbn) throws IOException {
-
         return parseFindBook(isbn);
     }
 
