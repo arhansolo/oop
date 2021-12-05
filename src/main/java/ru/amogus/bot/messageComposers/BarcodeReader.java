@@ -9,10 +9,11 @@ import java.awt.image.BufferedImage;
 
 public class BarcodeReader {
 
-    public static boolean isRotated45 = false;
+    private boolean isRotated45;
 
     public String readBarcode(BufferedImage image) throws NotFoundException {
         BinaryBitmap binaryBitmap = new BinaryBitmap(new HybridBinarizer(new BufferedImageLuminanceSource(image)));
+        isRotated45 = false;
 
         try {
             Result barcodeResult = new MultiFormatReader().decode(binaryBitmap);
