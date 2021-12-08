@@ -12,11 +12,11 @@ import ru.amogus.bot.Handler;
 
 import java.io.IOException;
 
-public abstract class UpdateHandler {
-    public abstract boolean validate(Update update);
-    public abstract BotResponse handle(Update update) throws IOException, TelegramApiException;
+public interface UpdateHandler {
+    boolean validate(Update update);
+    BotResponse handle(Update update) throws IOException, TelegramApiException;
 
-    public BotResponse buildResponse (String chatId, BotRequest request) throws IOException {
+    default BotResponse buildResponse (String chatId, BotRequest request) throws IOException {
         Handler handler = new Handler();
 
         BotResponse distributedData = handler.distribute(request);

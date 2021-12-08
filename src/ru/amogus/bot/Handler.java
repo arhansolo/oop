@@ -1,6 +1,8 @@
 package ru.amogus.bot;
 
 import com.google.zxing.NotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageCaption;
@@ -11,7 +13,8 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import ru.amogus.bot.parsers.KnigaBookParser;
 import ru.amogus.bot.parsers.Poem;
 import ru.amogus.bot.parsers.FindBookParser;
-
+import static ru.amogus.bot.Response.*;
+import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -25,14 +28,7 @@ import java.util.Objects;
 
 public class Handler {
 
-    String hello() {
-        return ("Привет!\n" +
-                "Чтобы ознакомиться с функционалом бота, отправь /help!");
-    }
-    String help() {
-        return ("Список доступных команд:\n" + "/randompoem - случайный экземпляр из коллекции русской поэзии!\n");
-    }
-    String stop() { return "До встречи!"; }
+    private static final Logger logger = LoggerFactory.getLogger(Handler.class);
 
     public BotResponse distribute(BotRequest request) throws IOException {
         SendMessage textResponse = new SendMessage();
@@ -42,30 +38,32 @@ public class Handler {
 
         String instruction = request.getInputText();
         List<PhotoSize> photo = request.getInputPhoto();
+        Document document = request.getInputDocument();
         CallbackQuery callbackQuery = request.getInputCallbackQuery();
 
-        if (instruction!=null)
-        {
-            textResponse.setText(handleText(instruction));
-        }
-        else if(photo!=null)
-        {
-            getBookInf(textResponse, photoResponse, editTextResponse, editCaptionResponse, request);
-        }
+        if (instruction != null)
+            handleText(textResponse, photoResponse, request);
+
+        else if(photo != null)
+            getBookInf(textResponse, photoResponse, request);
+
+        else if (document != null)
+            getBookInf(textResponse, photoResponse, request);
+
         else if (callbackQuery != null)
         {
             String callData = callbackQuery.getData();
             String messageId = Integer.toString(callbackQuery.getMessage().getMessageId());
             if (callData.equals("updateText"))
             {
-                String answer = "Да, я всё видел - это ты нажал кнопку!";
+                String answer = "Сообщение было изменено!";
                 editTextResponse.setText(answer);
                 editTextResponse.setMessageId(Integer.parseInt(messageId));
             }
 
             else if (callData.equals("updateCaption"))
             {
-                String answer = "Да, я всё видел - это ты нажал кнопку!";
+                String answer = "Описание было изменено!";
                 editCaptionResponse.setCaption(answer);
                 editCaptionResponse.setMessageId(Integer.parseInt(messageId));
             }
@@ -74,14 +72,14 @@ public class Handler {
         return new BotResponse(textResponse, photoResponse, editTextResponse, editCaptionResponse);
     }
 
-    public void getBookInf(SendMessage textResponse, SendPhoto photoResponse, EditMessageText editTextResponse,
-                           EditMessageCaption editCaptionResponse, BotRequest request) throws IOException {
+    public void getBookInf(SendMessage textResponse, SendPhoto photoResponse, BotRequest request) {
         KnigaBookParser kb = new KnigaBookParser();
 
         try {
-            String isbnCode = getIsbnFromBarcode(request);
-            String bookInf = kb.getInformation(isbnCode);
+            String isbnCode = validateISBN(request, textResponse);
+            if (isbnCode == null) return;
 
+            String bookInf = kb.getInformation(isbnCode);
             FindBookParser fb = new FindBookParser();
             String priceLink = fb.getInformation(isbnCode);
 
@@ -94,9 +92,10 @@ public class Handler {
                 setMarkupInline("updateCaption", "Показать цены!", priceLink,
                         textResponse, photoResponse);
             }
+
             catch (Exception e)
             {
-                //e.printStackTrace();
+                logger.error(e.toString());
                 textResponse.setText(bookInf);
                 if (fb.isGoodRequest((new URL("https://knigabook.com/search?q="+isbnCode))))
                     setMarkupInline("updateText","Показать цены!", priceLink,
@@ -104,62 +103,82 @@ public class Handler {
             }
 
         } catch (NotFoundException | IOException e) {
-            textResponse.setText("К сожалению, не удалось распознать штрихкод\uD83D\uDE14\n" +
-                    "Попробуй отправить ещё одно фото");
+            logger.error(e.toString());
+            textResponse.setText(UNREADABLE_BARCODE.getContent());
         }
     }
 
-    public void getBookPrice (SendMessage textResponse, SendPhoto photoResponse, EditMessageText editTextResponse,
-                              EditMessageCaption editCaptionResponse, BotRequest request) throws IOException {
-        FindBookParser fb = new FindBookParser();
-        try {
-            String isbnCode = getIsbnFromBarcode(request);
-            String result = fb.getInformation(isbnCode);
-            textResponse.setText(result);
-            setMarkupInline("updateText", "Показать информацию по книге!", "",
-                    textResponse, photoResponse);
+    @Nullable
+    public String validateISBN(BotRequest request, SendMessage textResponse) throws IOException, NotFoundException {
+        KnigaBookParser kb = new KnigaBookParser();
 
-        } catch (NotFoundException | IOException e) {
-            textResponse.setText("К сожалению, не удалось распознать штрихкод\uD83D\uDE14\n" +
-                    "Попробуй отправить ещё одно фото");
+        String isbn;
+        if (request.getInputText()!=null)
+            isbn = request.getInputText();
+        else
+            isbn = getIsbnFromBarcode(request);
+
+        if (isbn == null)
+        {
+            textResponse.setText(WRONG_PHOTO_FORMAT.getContent());
+            return null;
         }
+
+        if (!kb.isValidISBN(isbn))
+        {
+            textResponse.setText(INVALID_ISBN.getContent());
+            isbn = null;
+        }
+        return isbn;
     }
 
+    @Nullable
     public String getIsbnFromBarcode (BotRequest request) throws IOException, NotFoundException {
         BarcodeReader br = new BarcodeReader();
         BufferedImage image = handlePhoto(request);
+        try
+        {
             return br.readBarcode(image);
-    }
+        }
 
-
-    public String handleText (String instruction) throws IOException {
-        switch (instruction) {
-            case "/start":
-                return hello();
-            case "/stop":
-                return stop();
-            case "/randompoem":
-            {
-                Poem poem = new Poem();
-                return poem.getInformation("");
-            }
-            case "/help":
-                return help();
-            default:
-                return "Не понял тебя!";
+        catch (NullPointerException e)
+        {
+            return null;
         }
     }
-    public BufferedImage handlePhoto (BotRequest request) throws IOException {
-        List<PhotoSize> photo = request.getInputPhoto();
 
-        String fileId = Objects.requireNonNull(photo.stream()
-                .sorted(Comparator.comparing(PhotoSize::getFileSize).reversed())
-                .findFirst()
-                .orElse(null)).getFileId();
+    public void handleText (SendMessage textResponse, SendPhoto photoResponse, BotRequest request) throws IOException {
+        switch (request.getInputText()) {
+            case "/start" -> textResponse.setText(HELLO.getContent());
+            case "/randompoem" -> {
+                Poem poem = new Poem();
+                textResponse.setText(poem.getInformation(""));
+            }
+            case "/help" -> textResponse.setText(HELP.getContent());
+            default -> getBookInf(textResponse, photoResponse, request);
+        }
+    }
+
+    @Nullable
+    public BufferedImage handlePhoto(BotRequest request) throws IOException {
+        List<PhotoSize> compressedPhoto = request.getInputPhoto();
+        Document photo = request.getInputDocument();
         FileDownloader fd = new FileDownloader();
-        BufferedImage image =  fd.getFile(fileId);
 
-        return image;
+        if(compressedPhoto != null)
+        {
+            String fileId = Objects.requireNonNull(compressedPhoto.stream()
+                    .max(Comparator.comparing(PhotoSize::getFileSize))
+                    .orElse(null)).getFileId();
+            return fd.getPhoto(fileId);
+        }
+
+        if (photo != null)
+        {
+            String fileId = photo.getFileId();
+            return fd.getPhoto(fileId);
+        }
+        return null;
     }
 
     public void setMarkupInline (String callbackData, String buttonText, String url, SendMessage textResponse,
@@ -167,21 +186,14 @@ public class Handler {
     {
         InlineKeyboardMarkup markupInline = getMarkupInline(callbackData, buttonText, url);
 
-        switch (callbackData)
-        {
-            case "updateText":
-            {
+        switch (callbackData) {
+            case "updateText" ->
                 textResponse.setReplyMarkup(markupInline);
-                break;
-            }
-            case "updateCaption":
-            {
+            case "updateCaption" ->
                 photoResponse.setReplyMarkup(markupInline);
-                break;
-            }
-            default: break;
         }
     }
+
     public InlineKeyboardMarkup getMarkupInline (String callbackData, String buttonText, String url)
     {
         InlineKeyboardMarkup markupInline = new InlineKeyboardMarkup();

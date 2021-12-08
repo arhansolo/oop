@@ -1,30 +1,69 @@
+
 package ru.amogus.bot;
+import com.google.zxing.NotFoundException;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.Document;
+import org.telegram.telegrambots.meta.api.objects.PhotoSize;
 import ru.amogus.bot.parsers.Poem;
-
 import java.io.IOException;
 
 public class HandlerTest {
     @Test
-    public void helloTest() throws IOException {
+    public void ISBNFromTextMessageIsCorrect() throws IOException, NotFoundException {
         Handler handler = new Handler();
-        String str = handler.hello();
-        Assert.assertEquals("Привет!\n" +
-                "Чтобы ознакомиться с функционалом бота, отправь /help!", str);
+        String isbn = "526700054X";
+        BotRequest request = new BotRequest(isbn, null, null,null);
+        SendMessage textResponse = new SendMessage();
+        String resultISBN = handler.validateISBN(request, textResponse);
+        Assert.assertEquals(isbn, resultISBN);
+        Assert.assertNull(textResponse.getText());
     }
+
     @Test
-    public void helpTest() throws IOException {
+    public void ISBNFromTextMessageIsIncorrect() throws IOException, NotFoundException {
         Handler handler = new Handler();
-        String str = handler.help();
-        Assert.assertEquals("Список доступных команд:\n" + "/randomPoem - случайный экземпляр из коллекции русской поэзии!\n", str);
+        String isbn = "93534959352935390004050450";
+        BotRequest request = new BotRequest(isbn, null, null,null);
+        SendMessage textResponse = new SendMessage();
+        String resultISBN = handler.validateISBN(request, textResponse);
+        Assert.assertNull(resultISBN);
+        Assert.assertEquals(Response.INVALID_ISBN.getContent(), textResponse.getText());
     }
+
     @Test
-    public void stopTest() throws IOException {
+    @Ignore
+    public void ISBNFromBarcodeDocumentIsCorrect() throws IOException, NotFoundException {
         Handler handler = new Handler();
-        String str = handler.stop();
-        Assert.assertEquals("До встречи!", str);
+        String isbn = "9785981241475";
+
+        PhotoSize ps = new PhotoSize("AAMCAgADGQEAAgx1YZZpbmWy7mmLrZOFcCGGF1mFOiAAAhkVAAL2QbBI61knfmJuogQBAAdtAAMiBA", "AQADGRUAAvZBsEhy", 180, 320, 19433, null);
+        Document document = new Document("BQACAgIAAxkBAAIMdWGWaW5lsu5pi62ThXAhhhdZhTogAAIZFQAC9kGwSOtZJ35ibqIEIgQ", "AgADGRUAAvZBsEg", ps, "barcodeTest.jpg", "image/jpeg", 115760);
+
+        BotRequest request = new BotRequest(null, null, document,null);
+        SendMessage textResponse = new SendMessage();
+        String resultIsbn = handler.validateISBN(request, textResponse);
+
+        Assert.assertEquals(isbn, resultIsbn);
+        Assert.assertNull(textResponse.getText());
+    }
+
+    @Test
+    @Ignore
+    public void PhotoFromDocumentHasUnknownFormat() throws IOException, NotFoundException {
+        Handler handler = new Handler();
+
+        PhotoSize ps = new PhotoSize("AAMCAgADGQEAAgx5YZZsb8O4dtd4Y8ldzYa3NOGZa7IAAh8SAAJfobFIXr_9Ow6vlTsBAAdtAAMiBA", "AQADHxIAAl-hsUhy", 227, 320, 17471, null);
+        Document document = new Document("BQACAgIAAxkBAAIMeWGWbG_DuHbXeGPJXc2GtzThmWuyAAIfEgACX6GxSF6__TsOr5U7IgQ", "AgADHxIAAl-hsUg", ps , "Регламент практик по ООП (Java) 2020.pdf", "application/pdf", 104090);
+
+        BotRequest request = new BotRequest(null, null, document,null);
+        SendMessage textResponse = new SendMessage();
+        String resultIsbn = handler.validateISBN(request, textResponse);
+        System.out.println(textResponse.getText());
+        Assert.assertNull(resultIsbn);
+        Assert.assertEquals(Response.WRONG_PHOTO_FORMAT.getContent(), textResponse.getText());
     }
 
     @Test

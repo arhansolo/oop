@@ -7,7 +7,7 @@ import ru.amogus.bot.BotResponse;
 
 import java.io.IOException;
 
-public class TextUpdate extends UpdateHandler{
+public class TextUpdate implements UpdateHandler {
     @Override
     public boolean validate(Update update) { return update.hasMessage() && update.getMessage().hasText();}
 
@@ -17,9 +17,9 @@ public class TextUpdate extends UpdateHandler{
         Message mesUpdate = update.getMessage();
         String chatId = Long.toString(mesUpdate.getChatId());
         String text = mesUpdate.getText();
-        BotRequest userMessage = new BotRequest(text, null, null);
+        BotRequest userMessage = new BotRequest(text, null, null,null);
         text = userMessage.getInputText();
-        BotRequest request = new BotRequest(text, null, null);
+        BotRequest request = new BotRequest(text, null, null,null);
 
         return buildResponse(chatId, request);
     }
