@@ -10,6 +10,7 @@ import ru.amogus.bot.botObjects.BotResponse;
 import ru.amogus.bot.parsers.Poem;
 import static ru.amogus.bot.messageComposers.Response.*;
 
+import java.io.File;
 import java.lang.*;
 import java.io.IOException;
 import java.util.List;
@@ -21,6 +22,8 @@ public class Handler {
     public BotResponse distribute(BotRequest request) throws IOException {
         SendMessage textResponse = new SendMessage();
         SendPhoto photoResponse = new SendPhoto();
+
+        textResponse.enableMarkdown(true);
 
         EditMessageText editTextResponse = new EditMessageText();
         EditMessageCaption editCaptionResponse = new EditMessageCaption();
@@ -65,10 +68,17 @@ public class Handler {
     private void handleText (SendMessage textResponse, SendPhoto photoResponse, BotRequest request) throws IOException {
         switch (request.getInputText()) {
             case "/start" -> textResponse.setText(HELLO.getContent());
+            
+            case "/example" -> {
+                photoResponse.setCaption(EXAMPLE.getContent());
+                photoResponse.setPhoto(new InputFile(new File("resources/example.jpg")));
+            }
+
             case "/randompoem" -> {
                 Poem poem = new Poem();
                 textResponse.setText(poem.getInformation(""));
             }
+
             case "/help" -> textResponse.setText(HELP.getContent());
             default -> mc.getBookInf(textResponse, photoResponse, request);
         }
