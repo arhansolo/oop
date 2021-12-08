@@ -1,4 +1,4 @@
-package ru.amogus.bot;
+package ru.amogus.bot.messageComposers;
 
 import com.google.zxing.*;
 import com.google.zxing.client.j2se.BufferedImageLuminanceSource;
@@ -9,50 +9,56 @@ import java.awt.image.BufferedImage;
 
 public class BarcodeReader {
 
-    private static final String charset = "UTF-8"; // or "ISO-8859-1";
+    private boolean isRotated45;
 
-    public String readBarcode(BufferedImage image)
-            throws NotFoundException {
-        BinaryBitmap binaryBitmap = new BinaryBitmap(new HybridBinarizer(
-                new BufferedImageLuminanceSource(image)));
-        try
-        {
+    public String readBarcode(BufferedImage image) throws NotFoundException {
+        BinaryBitmap binaryBitmap = new BinaryBitmap(new HybridBinarizer(new BufferedImageLuminanceSource(image)));
+        isRotated45 = false;
+
+        try {
             Result barcodeResult = new MultiFormatReader().decode(binaryBitmap);
             return barcodeResult.getText();
         }
-        catch (NotFoundException e)
-        {
+
+        catch (NotFoundException e) {
             String result = rotateBitmap(binaryBitmap);
-            if (result == null) return new MultiFormatReader().decode(binaryBitmap).getText();
+
+            if (result == null) {
+                return new MultiFormatReader().decode(binaryBitmap).getText();
+            }
+
             return result;
         }
     }
 
     @Nullable
-    public String rotateBitmap (BinaryBitmap binaryBitmap) throws NotFoundException {
-        int rotate45Count = 0;
+    private String rotateBitmap (BinaryBitmap binaryBitmap) throws NotFoundException {
         for (int i = 0; i < 4; i++) {
             if (binaryBitmap.isRotateSupported()) {
                 binaryBitmap = binaryBitmap.rotateCounterClockwise();
             }
+
             try {
                 Result barcodeResult = new MultiFormatReader().decode(binaryBitmap);
                 return barcodeResult.getText();
             }
+
             catch (NotFoundException e){
-                if (rotate45Count>0) continue;
+                if (isRotated45) continue;
+
                 binaryBitmap = binaryBitmap.rotateCounterClockwise45();
-                rotate45Count+=1;
+                isRotated45 = true;
 
                 try {
                     Result barcodeResult = new MultiFormatReader().decode(binaryBitmap);
                     return barcodeResult.getText();
                 }
-                catch (NotFoundException exception){
-                    //
+
+                catch (NotFoundException ignored){
                 }
             }
         }
+
         return null;
     }
 }

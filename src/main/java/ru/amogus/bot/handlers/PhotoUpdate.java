@@ -3,14 +3,17 @@ package ru.amogus.bot.handlers;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.PhotoSize;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import ru.amogus.bot.*;
+import ru.amogus.bot.botObjects.BotRequest;
+import ru.amogus.bot.botObjects.BotResponse;
 
 import java.io.IOException;
 import java.util.List;
 
 public class PhotoUpdate implements UpdateHandler {
     @Override
-    public boolean validate(Update update) { return update.hasMessage() && update.getMessage().hasPhoto();}
+    public boolean validate(Update update) {
+        return update.hasMessage() && update.getMessage().hasPhoto();
+    }
 
     @Override
     public BotResponse handle(Update update) throws IOException {
