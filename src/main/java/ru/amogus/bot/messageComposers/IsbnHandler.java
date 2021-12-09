@@ -7,7 +7,6 @@ import org.telegram.telegrambots.meta.api.objects.Document;
 import org.telegram.telegrambots.meta.api.objects.PhotoSize;
 import ru.amogus.bot.botObjects.BotRequest;
 import ru.amogus.bot.parsers.FileDownloader;
-import ru.amogus.bot.parsers.KnigaBookParser;
 
 import javax.annotation.Nullable;
 import java.awt.image.BufferedImage;
@@ -16,8 +15,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
-import static ru.amogus.bot.messageComposers.Response.INVALID_ISBN;
-import static ru.amogus.bot.messageComposers.Response.WRONG_PHOTO_FORMAT;
+import static ru.amogus.bot.messageComposers.ResponseConstants.INVALID_ISBN;
+import static ru.amogus.bot.messageComposers.ResponseConstants.WRONG_PHOTO_FORMAT;
 
 public class IsbnHandler {
 
@@ -59,7 +58,6 @@ public class IsbnHandler {
         try {
             return br.readBarcode(image);
         }
-
         catch (NullPointerException e) {
             return null;
         }

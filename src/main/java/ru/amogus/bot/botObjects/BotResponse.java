@@ -20,6 +20,7 @@ public class BotResponse extends SendMessage {
         this.outputEditText = outputEditText;
         this.outputEditCaption = outputEditCaption;
     }
+
     public SendMessage getOutputText() {
         return outputText;
     }
@@ -32,6 +33,4 @@ public class BotResponse extends SendMessage {
     public EditMessageText getOutputEditText() {return outputEditText;}
 
     public EditMessageCaption getOutputEditCaption () {return  outputEditCaption;}
-
-
 }

@@ -9,6 +9,8 @@ import org.telegram.telegrambots.meta.api.objects.InputFile;
 import ru.amogus.bot.botObjects.BotRequest;
 import ru.amogus.bot.parsers.FindBookParser;
 import ru.amogus.bot.parsers.KnigaBookParser;
+import static ru.amogus.bot.messageComposers.Constants.*;
+
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -16,15 +18,17 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
-import static ru.amogus.bot.messageComposers.Response.UNREADABLE_BARCODE;
+import static ru.amogus.bot.messageComposers.ResponseConstants.UNREADABLE_BARCODE;
 
 public class MessageComposer {
 
-    private static final Logger logger = LoggerFactory.getLogger(Handler.class);
+    private static final Logger LOG = LoggerFactory.getLogger(Handler.class);
 
     private final InlineKeyboardEditor ikEditor = new InlineKeyboardEditor();
 
-    private final String buttonPriceText = "Показать цены";
+    private final static String BUTTON_PRICE_TEXT = "Показать цены";
+
+    private final static String IMAGE_PATH = "resources/cover.png";
 
     public void getBookInf(SendMessage textResponse, SendPhoto photoResponse, BotRequest request) {
         KnigaBookParser kb = new KnigaBookParser();
@@ -43,25 +47,23 @@ public class MessageComposer {
 
             try {
                 BufferedImage bookCover = kb.getImage(isbnCode);
-                File outputFile = new File("resources/cover.png");
+                File outputFile = new File(IMAGE_PATH);
                 ImageIO.write(bookCover, "png", outputFile);
                 photoResponse.setPhoto(new InputFile((outputFile)));
                 photoResponse.setCaption(bookInf);
-                ikEditor.setMarkupInline("updateCaption", buttonPriceText, priceLink, textResponse, photoResponse);
+                ikEditor.setMarkupInline(UPDATE_CAPTION, BUTTON_PRICE_TEXT, priceLink, textResponse, photoResponse);
             }
-
             catch (Exception e) {
-                logger.error(e.toString());
+                LOG.error(e.toString());
                 textResponse.setText(bookInf);
 
                 if (fb.isGoodRequest((new URL("https://knigabook.com/search?q="+isbnCode)))) {
-                    ikEditor.setMarkupInline("updateText", buttonPriceText, priceLink, textResponse, photoResponse);
+                    ikEditor.setMarkupInline(UPDATE_TEXT, BUTTON_PRICE_TEXT, priceLink, textResponse, photoResponse);
                 }
             }
         }
-
         catch (NotFoundException | IOException e) {
-            logger.error(e.toString());
+            LOG.error(e.toString());
             textResponse.setText(UNREADABLE_BARCODE.getContent());
         }
     }

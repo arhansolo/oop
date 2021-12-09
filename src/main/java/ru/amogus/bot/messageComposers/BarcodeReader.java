@@ -19,7 +19,6 @@ public class BarcodeReader {
             Result barcodeResult = new MultiFormatReader().decode(binaryBitmap);
             return barcodeResult.getText();
         }
-
         catch (NotFoundException e) {
             String result = rotateBitmap(binaryBitmap);
 
@@ -42,7 +41,6 @@ public class BarcodeReader {
                 Result barcodeResult = new MultiFormatReader().decode(binaryBitmap);
                 return barcodeResult.getText();
             }
-
             catch (NotFoundException e){
                 if (isRotated45) continue;
 
@@ -53,7 +51,6 @@ public class BarcodeReader {
                     Result barcodeResult = new MultiFormatReader().decode(binaryBitmap);
                     return barcodeResult.getText();
                 }
-
                 catch (NotFoundException ignored){
                 }
             }

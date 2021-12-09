@@ -9,7 +9,7 @@ import org.telegram.telegrambots.meta.api.objects.Document;
 import org.telegram.telegrambots.meta.api.objects.PhotoSize;
 import ru.amogus.bot.botObjects.BotRequest;
 import ru.amogus.bot.messageComposers.IsbnHandler;
-import ru.amogus.bot.messageComposers.Response;
+import ru.amogus.bot.messageComposers.ResponseConstants;
 import ru.amogus.bot.parsers.Poem;
 import java.io.IOException;
 
@@ -33,7 +33,7 @@ public class IsbnHandlerTest {
         SendMessage textResponse = new SendMessage();
         String resultISBN = ih.validateISBN(request, textResponse);
         Assert.assertNull(resultISBN);
-        Assert.assertEquals(Response.INVALID_ISBN.getContent(), textResponse.getText());
+        Assert.assertEquals(ResponseConstants.INVALID_ISBN.getContent(), textResponse.getText());
     }
 
     @Test
@@ -65,7 +65,7 @@ public class IsbnHandlerTest {
         SendMessage textResponse = new SendMessage();
         String resultIsbn = ih.validateISBN(request, textResponse);
         Assert.assertNull(resultIsbn);
-        Assert.assertEquals(Response.WRONG_PHOTO_FORMAT.getContent(), textResponse.getText());
+        Assert.assertEquals(ResponseConstants.WRONG_PHOTO_FORMAT.getContent(), textResponse.getText());
     }
 
     @Test

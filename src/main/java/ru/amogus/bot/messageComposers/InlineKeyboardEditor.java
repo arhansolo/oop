@@ -4,6 +4,7 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
+import static ru.amogus.bot.messageComposers.Constants.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,9 +14,9 @@ public class InlineKeyboardEditor {
         InlineKeyboardMarkup markupInline = getMarkupInline(callbackData, buttonText, url);
 
         switch (callbackData) {
-            case "updateText" ->
+            case UPDATE_TEXT ->
                     textResponse.setReplyMarkup(markupInline);
-            case "updateCaption" ->
+            case UPDATE_CAPTION ->
                     photoResponse.setReplyMarkup(markupInline);
         }
     }

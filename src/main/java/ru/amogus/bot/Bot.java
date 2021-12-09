@@ -45,12 +45,12 @@ public class Bot extends TelegramLongPollingBot {
         handlers.add(new CallbackQueryUpdate());
     }
 
-    private static final Logger logger = LoggerFactory.getLogger(Bot.class);
+    private static final Logger LOG = LoggerFactory.getLogger(Bot.class);
     
     @Override
     public void onUpdateReceived(Update update) {
         BotResponse message = new BotResponse(null, null, null, null);
-        logger.info(getInformationAboutUser(update));
+        LOG.info(getInformationAboutUser(update));
 
         for (UpdateHandler handler : handlers) {
             if (handler.validate(update)) {
@@ -58,9 +58,8 @@ public class Bot extends TelegramLongPollingBot {
                     message = handler.handle(update);
                     break;
                 }
-
                 catch (IOException | TelegramApiException e) {
-                    logger.error(e.toString());
+                    LOG.error(e.toString());
                 }
             }
         }
@@ -84,9 +83,8 @@ public class Bot extends TelegramLongPollingBot {
                 if (editCaption.getCaption()!=null)
                     execute(editCaption);
         }
-
         catch (TelegramApiException e) {
-            logger.error(e.toString());
+            LOG.error(e.toString());
         }
     }
 
